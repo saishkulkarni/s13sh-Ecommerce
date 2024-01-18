@@ -1,4 +1,4 @@
-package com.s13sh.myshop.dao;
+   package com.s13sh.myshop.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

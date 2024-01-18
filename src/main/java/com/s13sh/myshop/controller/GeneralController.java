@@ -5,11 +5,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.s13sh.myshop.dto.Customer;
 import com.s13sh.myshop.service.CustomerService;
 
+import ch.qos.logback.core.model.Model;
 import jakarta.validation.Valid;
 
 @Controller
@@ -43,6 +45,14 @@ public class GeneralController {
 			return "Signup";
 		else
 			return customerService.save(customer,result);
+	}
+	
+	@GetMapping("/send-otp/{id}")
+	public String sendOtp(@PathVariable int id,ModelMap map)
+	{
+		map.put("id", id);
+		map.put("msg","Otp Send Success");
+		return "VerifyOtp";
 	}
 
 }

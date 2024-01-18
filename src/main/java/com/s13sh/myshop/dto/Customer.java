@@ -44,4 +44,6 @@ public class Customer {
 	@Past(message = "* Enter proper Dob")
 	private LocalDate dob;
 	private String role;
+	private int otp;
+	private boolean verified;
 }

@@ -1,5 +1,7 @@
 package com.s13sh.myshop.service.implementation;
 
+import java.util.Random;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -27,8 +29,10 @@ public class CustomerServiceImpl implements CustomerService {
 		else {
 			customer.setPassword(AES.encrypt(customer.getPassword(), "123"));
 			customer.setRole("USER");
+			customer.setOtp(new Random().nextInt(100000, 999999));
 			customerDao.save(customer);
-			return "redirect:/signin";
+			//Sending Mail Logic
+			return "redirect:/send-otp/"+customer.getId();
 		}
 	}
 
