@@ -4,6 +4,10 @@ import java.time.LocalDate;
 
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
@@ -16,7 +20,10 @@ import lombok.Data;
 
 @Data
 @Component
+@Entity
 public class Customer {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@NotEmpty(message = "* It is Compulsory Field")
 	@Size(min = 3, max = 10, message = "* Should be between 3 to 10 charecters")
@@ -36,4 +43,5 @@ public class Customer {
 	@NotNull(message = "* It is Compulsory Field")
 	@Past(message = "* Enter proper Dob")
 	private LocalDate dob;
+	private String role;
 }

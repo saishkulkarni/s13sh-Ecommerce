@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.s13sh.myshop.dto.Customer;
+import com.s13sh.myshop.service.CustomerService;
 
 import jakarta.validation.Valid;
 
@@ -17,6 +18,9 @@ public class GeneralController {
 	@Autowired
 	Customer customer;
 
+	@Autowired
+	CustomerService customerService;
+	
 	@GetMapping("/")
 	public String loadHome() {
 		return "Home";
@@ -38,7 +42,7 @@ public class GeneralController {
 		if (result.hasErrors())
 			return "Signup";
 		else
-			return "Login";
+			return customerService.save(customer,result);
 	}
 
 }
