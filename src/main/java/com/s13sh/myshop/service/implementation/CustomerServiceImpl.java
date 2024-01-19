@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import com.s13sh.myshop.dao.CustomerDao;
 import com.s13sh.myshop.dto.Customer;
 import com.s13sh.myshop.helper.AES;
+import com.s13sh.myshop.helper.MailSendingHelper;
 import com.s13sh.myshop.service.CustomerService;
 
 @Service
@@ -17,6 +18,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	CustomerDao customerDao;
+
+	@Autowired
+	MailSendingHelper mailHelper;
 
 	@Override
 	public String save(Customer customer, BindingResult result) {
@@ -52,10 +56,10 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public String sendOtp(int id, ModelMap map) {
-		Customer customer=customerDao.findById(id);
+		Customer customer = customerDao.findById(id);
 		customer.setOtp(new Random().nextInt(100000, 999999));
 		customerDao.save(customer);
-		//Logic for Sending Otp
+		mailHelper.sendOtp(customer);
 		map.put("id", id);
 		map.put("successMessage", "Otp Sent Success");
 		return "VerifyOtp";
@@ -63,10 +67,10 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public String resendOtp(int id, ModelMap map) {
-		Customer customer=customerDao.findById(id);
+		Customer customer = customerDao.findById(id);
 		customer.setOtp(new Random().nextInt(100000, 999999));
 		customerDao.save(customer);
-		//Logic for Resending Otp
+		mailHelper.resendOtp(customer);
 		map.put("id", id);
 		map.put("successMessage", "Otp Resent Success");
 		return "VerifyOtp";
