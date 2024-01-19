@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 
 import com.s13sh.myshop.dao.CustomerDao;
@@ -29,11 +30,46 @@ public class CustomerServiceImpl implements CustomerService {
 		else {
 			customer.setPassword(AES.encrypt(customer.getPassword(), "123"));
 			customer.setRole("USER");
-			customer.setOtp(new Random().nextInt(100000, 999999));
 			customerDao.save(customer);
-			//Sending Mail Logic
-			return "redirect:/send-otp/"+customer.getId();
+			return "redirect:/send-otp/" + customer.getId();
 		}
+	}
+
+	@Override
+	public String verifyOtp(int id, int otp, ModelMap map) {
+		Customer customer = customerDao.findById(id);
+		System.out.println("*******2********");
+		if (customer.getOtp() == otp) {
+			customer.setVerified(true);
+			customerDao.save(customer);
+			return "redirect:/signin";
+		} else {
+			map.put("failMessage", "Invalid Otp, Try Again!");
+			map.put("id", id);
+			return "VerifyOtp";
+		}
+	}
+
+	@Override
+	public String sendOtp(int id, ModelMap map) {
+		Customer customer=customerDao.findById(id);
+		customer.setOtp(new Random().nextInt(100000, 999999));
+		customerDao.save(customer);
+		//Logic for Sending Otp
+		map.put("id", id);
+		map.put("successMessage", "Otp Sent Success");
+		return "VerifyOtp";
+	}
+
+	@Override
+	public String resendOtp(int id, ModelMap map) {
+		Customer customer=customerDao.findById(id);
+		customer.setOtp(new Random().nextInt(100000, 999999));
+		customerDao.save(customer);
+		//Logic for Resending Otp
+		map.put("id", id);
+		map.put("successMessage", "Otp Resent Success");
+		return "VerifyOtp";
 	}
 
 }

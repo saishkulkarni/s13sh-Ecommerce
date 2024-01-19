@@ -7,11 +7,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.s13sh.myshop.dto.Customer;
 import com.s13sh.myshop.service.CustomerService;
 
-import ch.qos.logback.core.model.Model;
 import jakarta.validation.Valid;
 
 @Controller
@@ -22,7 +22,7 @@ public class GeneralController {
 
 	@Autowired
 	CustomerService customerService;
-	
+
 	@GetMapping("/")
 	public String loadHome() {
 		return "Home";
@@ -44,15 +44,22 @@ public class GeneralController {
 		if (result.hasErrors())
 			return "Signup";
 		else
-			return customerService.save(customer,result);
+			return customerService.save(customer, result);
+	}
+
+	@GetMapping("/send-otp/{id}")
+	public String sendOtp(@PathVariable int id, ModelMap map) {
+		return customerService.sendOtp(id,map);
+	}
+
+	@PostMapping("/verify-otp")
+	public String verifyOtp(@RequestParam int id,@RequestParam int otp,ModelMap map) {
+		return customerService.verifyOtp(id,otp,map);
 	}
 	
-	@GetMapping("/send-otp/{id}")
-	public String sendOtp(@PathVariable int id,ModelMap map)
-	{
-		map.put("id", id);
-		map.put("msg","Otp Send Success");
-		return "VerifyOtp";
+	@GetMapping("/resend-otp/{id}")
+	public String resendOtp(@PathVariable int id, ModelMap map) {
+		return customerService.resendOtp(id,map);
 	}
 
 }
