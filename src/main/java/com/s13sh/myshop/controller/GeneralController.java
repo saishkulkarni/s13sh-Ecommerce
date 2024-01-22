@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.s13sh.myshop.dto.Customer;
 import com.s13sh.myshop.service.CustomerService;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -49,17 +50,29 @@ public class GeneralController {
 
 	@GetMapping("/send-otp/{id}")
 	public String sendOtp(@PathVariable int id, ModelMap map) {
-		return customerService.sendOtp(id,map);
+		return customerService.sendOtp(id, map);
 	}
 
 	@PostMapping("/verify-otp")
-	public String verifyOtp(@RequestParam int id,@RequestParam int otp,ModelMap map) {
-		return customerService.verifyOtp(id,otp,map);
+	public String verifyOtp(@RequestParam int id, @RequestParam int otp, ModelMap map, HttpSession session) {
+		return customerService.verifyOtp(id, otp, map, session);
 	}
-	
+
 	@GetMapping("/resend-otp/{id}")
 	public String resendOtp(@PathVariable int id, ModelMap map) {
-		return customerService.resendOtp(id,map);
+		return customerService.resendOtp(id, map);
+	}
+
+	@PostMapping("/login")
+	public String login(@RequestParam String email, @RequestParam String password, ModelMap map, HttpSession session) {
+		return customerService.login(email, password, map, session);
+	}
+
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.removeAttribute("customer");
+		session.setAttribute("successMessage", "Logout Success");
+		return "redirect:/";
 	}
 
 }

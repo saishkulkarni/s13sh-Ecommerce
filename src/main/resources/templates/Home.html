@@ -77,14 +77,25 @@
 				<li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
 			</ul>
 			<ul class="navbar-nav ml-auto">
-				<li class="nav-item"><a class="nav-link" href="/cart"><i class="fas fa-shopping-cart"></i> Cart</a></li>
+				<th:block th:if="${session.customer==null}">
 				<li class="nav-item"><a class="nav-link" href="/signin">Sign In</a></li>
 				<li class="nav-item"><a class="nav-link" href="/signup">Sign Up</a></li>
-				<li class="nav-item"><a class="nav-link" href="/admin">Admin Dashboard</a></li>
+				</th:block>
+				<th:block th:if="${session.customer}">
+				<th:block th:if="${session.customer.role=='ADMIN'}">
+				<li class="nav-item"><a class="nav-link" href="/admin">Admin Dashboard</a></li>	
+				</th:block>
+				<li class="nav-item"><a class="nav-link" href="/cart"><i class="fas fa-shopping-cart"></i> Cart</a></li>
 				<li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+				</th:block>
 			</ul>
 		</div>
 	</nav>
+	<div class="alert alert-success" th:if="${session.successMessage}" role="alert" th:text="${session.successMessage}">
+	</div>
+	<div class="alert alert-danger" th:if="${session.failMessage}" role="alert" th:text="${session.failMessage}">
+	</div>
+	<th:block th:text="${@sessionMessageRemover.removeMessage()}"></th:block>
 
 	<div class="container mt-4">
 		<h2>Welcome to s13shMyShop!</h2>

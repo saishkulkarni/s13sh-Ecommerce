@@ -13,6 +13,8 @@ import com.s13sh.myshop.helper.AES;
 import com.s13sh.myshop.helper.MailSendingHelper;
 import com.s13sh.myshop.service.CustomerService;
 
+import jakarta.servlet.http.HttpSession;
+
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
@@ -40,12 +42,13 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String verifyOtp(int id, int otp, ModelMap map) {
+	public String verifyOtp(int id, int otp, ModelMap map, HttpSession session) {
 		Customer customer = customerDao.findById(id);
 		System.out.println("*******2********");
 		if (customer.getOtp() == otp) {
 			customer.setVerified(true);
 			customerDao.save(customer);
+			session.setAttribute("successMessage", "Account Created Success");
 			return "redirect:/signin";
 		} else {
 			map.put("failMessage", "Invalid Otp, Try Again!");
@@ -59,7 +62,7 @@ public class CustomerServiceImpl implements CustomerService {
 		Customer customer = customerDao.findById(id);
 		customer.setOtp(new Random().nextInt(100000, 999999));
 		customerDao.save(customer);
-		mailHelper.sendOtp(customer);
+		// mailHelper.sendOtp(customer);
 		map.put("id", id);
 		map.put("successMessage", "Otp Sent Success");
 		return "VerifyOtp";
@@ -70,10 +73,30 @@ public class CustomerServiceImpl implements CustomerService {
 		Customer customer = customerDao.findById(id);
 		customer.setOtp(new Random().nextInt(100000, 999999));
 		customerDao.save(customer);
-		mailHelper.resendOtp(customer);
+		// mailHelper.resendOtp(customer);
 		map.put("id", id);
 		map.put("successMessage", "Otp Resent Success");
 		return "VerifyOtp";
+	}
+
+	@Override
+	public String login(String email, String password, ModelMap map, HttpSession session) {
+		Customer customer = customerDao.findByEmail(email);
+		if (customer == null)
+			session.setAttribute("failMessage", "Invalid Email");
+		else {
+			if (AES.decrypt(customer.getPassword(), "123").equals(password)) {
+				if (customer.isVerified()) {
+					session.setAttribute("customer", customer);
+					session.setAttribute("successMessage", "Login Success");
+					return "redirect:/";
+				} else {
+					return resendOtp(customer.getId(), map);
+				}
+			} else
+				session.setAttribute("failMessage", "Invalid Password");
+		}
+		return "Login";
 	}
 
 }

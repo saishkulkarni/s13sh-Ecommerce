@@ -1,4 +1,4 @@
-   package com.s13sh.myshop.dao;
+package com.s13sh.myshop.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -25,5 +25,9 @@ public class CustomerDao {
 
 	public Customer findById(int id) {
 		return customerRepository.findById(id).orElseThrow();
+	}
+
+	public Customer findByEmail(String email) {
+		return customerRepository.findByEmail(email);
 	}
 }
