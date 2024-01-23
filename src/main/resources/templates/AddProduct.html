@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - MyShop</title>
+    <title>Add Product - MyShop</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <style>
         body {
@@ -100,11 +100,41 @@
     <th:block th:text="${@sessionMessageRemover.removeMessage()}"></th:block>
 
     <div class="container mt-4">
-        <h2>Welcome to Admin Dashboard!</h2>
-        <div>
-            <a href="/admin/add-product" class="btn btn-success">Add Product</a>
-            <a href="/admin/manage-products" class="btn btn-secondary">Manage Products</a>
-        </div>
+        <h2>Add Product</h2>
+        <form action="/admin/add-product" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="productName">Product Name:</label>
+                <input type="text" class="form-control" id="productName" name="productName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productPrice">Product Price:</label>
+                <input type="number" class="form-control" id="productPrice" name="productPrice" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productCategory">Product Category:</label>
+                <input type="text" class="form-control" id="productCategory" name="productCategory" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productStock">Product Stock:</label>
+                <input type="number" class="form-control" id="productStock" name="productStock" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productDescription">Product Description:</label>
+                <textarea class="form-control" id="productDescription" name="productDescription" rows="3"
+                    required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="productPicture">Product Picture:</label>
+                <input type="file" class="form-control-file" id="productPicture" name="productPicture">
+            </div>
+
+            <button type="submit" class="btn btn-success">Add Product</button>
+        </form>
     </div>
 
     <footer class="py-3 text-center"> &copy; 2024 s13shMyShop </footer>

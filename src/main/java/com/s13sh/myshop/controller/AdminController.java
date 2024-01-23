@@ -21,4 +21,9 @@ public class AdminController {
 		return adminService.loadDashboard(session);
 	}
 
+	@GetMapping("/add-product")
+	public String loadAddProdcut(HttpSession session) {
+		return adminService.loadAddProduct(session);
+	}
+
 }
