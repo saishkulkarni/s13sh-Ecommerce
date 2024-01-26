@@ -1,7 +1,13 @@
 package com.s13sh.myshop.helper;
 
+import java.io.File;
+import java.io.IOException;
+
 public class AdminPassword {
-public static void main(String[] args) {
-	System.out.println(AES.encrypt("admin", "123"));
-}
+	public static void main(String[] args) throws IOException {
+		File file = new File("src/main/resources/static/images");
+		if (!file.isDirectory())
+			file.mkdir();
+		
+	}
 }

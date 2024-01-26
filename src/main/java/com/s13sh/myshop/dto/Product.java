@@ -2,12 +2,10 @@ package com.s13sh.myshop.dto;
 
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -29,7 +27,8 @@ public class Product {
 	private String description;
 	@DecimalMin(value = "1", message = "* Enter atleast Minimum 1")
 	private int stock;
-	@Lob
-	@Column(columnDefinition = "MEDIUMBLOB")
-	private byte[] image;
+//	@Lob
+//	@Column(columnDefinition = "MEDIUMBLOB")
+//	private byte[] image;
+	private String imagePath;
 }

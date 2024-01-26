@@ -34,8 +34,9 @@ public class AdminController {
 	}
 
 	@PostMapping("/add-product")
-	public String addProdcut(@Valid Product product, BindingResult result,@RequestParam MultipartFile picture, HttpSession session, ModelMap map) {
-		return adminService.addProduct(product, result,picture, session, map);
+	public String addProdcut(@Valid Product product, BindingResult result, @RequestParam MultipartFile picture,
+			HttpSession session, ModelMap map) {
+		return adminService.addProduct(product, result, picture, session, map);
 	}
 
 }

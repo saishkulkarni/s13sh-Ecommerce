@@ -1,6 +1,9 @@
 package com.s13sh.myshop.service.implementation;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,19 +75,32 @@ public class AdminServiceImpl implements AdminService {
 				if (result.hasErrors())
 					return "AddProduct";
 				else {
+//					try {
+//						byte[] image = new byte[picture.getInputStream().available()];
+//						picture.getInputStream().read(image);
+//
+//						product.setImage(image);
+					product.setImagePath("/images/" + product.getName() + ".jpg");
+					productDao.save(product);
+
+					File file = new File("src/main/resources/static/images");
+					if (!file.isDirectory())
+						file.mkdir();
+
 					try {
-						byte[] image = new byte[picture.getInputStream().available()];
-						picture.getInputStream().read(image);
-
-						product.setImage(image);
-						productDao.save(product);
-
-						session.setAttribute("successMessage", "Product Added Success");
-						return "redirect:/admin";
+						Files.write(Paths.get("src/main/resources/static/images", product.getName() + ".jpg"),
+								picture.getBytes());
 					} catch (IOException e) {
-						session.setAttribute("failMessage", "Something Went Wrong");
+						session.setAttribute("failMessage", "You are Unauthorized to access his URL");
 						return "redirect:/";
 					}
+					session.setAttribute("successMessage", "Product Added Success");
+					return "redirect:/admin";
+
+//					} catch (IOException e) {
+//						session.setAttribute("failMessage", "You are Unauthorized to access his URL");
+//						return "redirect:/";
+//					}
 				}
 			} else {
 				session.setAttribute("failMessage", "You are Unauthorized to access his URL");
