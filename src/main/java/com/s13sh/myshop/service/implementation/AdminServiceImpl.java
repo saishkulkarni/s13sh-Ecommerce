@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -101,6 +102,29 @@ public class AdminServiceImpl implements AdminService {
 //						session.setAttribute("failMessage", "You are Unauthorized to access his URL");
 //						return "redirect:/";
 //					}
+				}
+			} else {
+				session.setAttribute("failMessage", "You are Unauthorized to access his URL");
+				return "redirect:/";
+			}
+		}
+	}
+
+	@Override
+	public String manageproducts(HttpSession session, ModelMap map) {
+		Customer customer = (Customer) session.getAttribute("customer");
+		if (customer == null) {
+			session.setAttribute("failMessage", "Invalid Session");
+			return "redirect:/signin";
+		} else {
+			if (customer.getRole().equals("ADMIN")) {
+				List<Product> products = productDao.fetchAll();
+				if (products.isEmpty()) {
+					session.setAttribute("failMessage", "No Products Present");
+					return "redirect:/admin";
+				} else {
+					map.put("products", products);
+					return "ManageProducts";
 				}
 			} else {
 				session.setAttribute("failMessage", "You are Unauthorized to access his URL");

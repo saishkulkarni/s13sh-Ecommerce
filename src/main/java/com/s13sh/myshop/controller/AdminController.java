@@ -39,4 +39,9 @@ public class AdminController {
 		return adminService.addProduct(product, result, picture, session, map);
 	}
 
+	@GetMapping("/manage-products")
+	public String manageProducts(HttpSession session, ModelMap map) {
+		return adminService.manageproducts(session, map);
+	}
+
 }

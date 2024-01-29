@@ -16,4 +16,6 @@ public interface AdminService {
 
 	String addProduct(Product product, BindingResult result, MultipartFile picture, HttpSession session, ModelMap map);
 
+	String manageproducts(HttpSession session, ModelMap map);
+
 }
