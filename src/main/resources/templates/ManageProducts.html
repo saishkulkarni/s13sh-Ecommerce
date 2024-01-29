@@ -32,23 +32,19 @@
         }
 
         .container {
-            max-width: 100%;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            color: #28a745;
-        }
-
-        .product {
-            border: 1px solid #dee2e6;
-            padding: 15px;
+            margin-top: 20px;
             margin-bottom: 20px;
-            border-radius: 5px;
+        }
+
+        .product-card {
+            width: calc(33.333% - 20px); /* Adjust card width here */
+            margin-right: 20px;
+            margin-bottom: 20px;
+            float: left;
+        }
+
+        .product-card .card-body {
+            padding: 20px;
         }
 
         footer {
@@ -58,6 +54,11 @@
             position: fixed;
             bottom: 0;
             width: 100%;
+        }
+
+        img{
+            height: 250px;
+            width: 250px;
         }
     </style>
 </head>
@@ -92,42 +93,31 @@
         </div>
     </nav>
 
-    <div class="alert alert-success" th:if="${session.successMessage}" role="alert"
-        th:text="${session.successMessage}"></div>
-    <div class="alert alert-danger" th:if="${session.failMessage}" role="alert"
-        th:text="${session.failMessage}"></div>
-    <th:block th:text="${@sessionMessageRemover.removeMessage()}"></th:block>
-    <div>
+
+    <div class="container">
         <h1>Manage Products</h1>
-        <table border="1">
-            <tr>
-                <th>Picture</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Edit</th>
-                <th>Delete</th>
-            </tr>
-            <tr th:each="product: ${products}">
-                <th><img th:src="${product.imagePath}" alt="Product"></th>
-                <th th:text="${product.name}"></th>
-                <th th:text="${product.category}"></th>
-                <th th:text="${product.description}"></th>
-                <th th:text="${product.price}"></th>
-                <th th:text="${product.stock}"></th>
-                <th><button>Edit</button></th>
-                <th><button>Delete</button></th>
-            </tr>
-        </table>
+        <div th:each="product:${products}">
+            <div class="col-md-4 product-card">
+                <div class="card">
+                    <img class="card-img-top" th:src="${product.imagePath}" alt="Product Image">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.name}"></h5>
+                        <p class="card-text" th:text="${product.description}"></p>
+                        <p>Price: <th:block th:text="${product.price}"></th:block>&#8377</p>
+                        <p>Stock: <th:block th:text="${product.stock}"></th:block></p>
+                        <a href="#" class="btn btn-primary">Edit</a>
+                        <a href="#" class="btn btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
     <footer class="py-3 text-center"> &copy; 2024 s13shMyShop </footer>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="https://kit.fontawesome.com/your-font-awesome-kit-id.js" crossorigin="anonymous"></script>
 </body>
 
 </html>
