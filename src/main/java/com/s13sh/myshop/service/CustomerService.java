@@ -17,4 +17,6 @@ public interface CustomerService {
 	String resendOtp(int id, ModelMap map);
 
 	String login(String email, String password, ModelMap map, HttpSession session);
+
+    String viewProducts(HttpSession session, ModelMap map);
 }

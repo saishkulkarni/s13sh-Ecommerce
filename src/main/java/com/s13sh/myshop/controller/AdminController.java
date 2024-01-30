@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,9 +40,25 @@ public class AdminController {
 		return adminService.addProduct(product, result, picture, session, map);
 	}
 
+	@PostMapping("/update-product")
+	public String updateProdcut(@Valid Product product, BindingResult result, @RequestParam MultipartFile picture,
+			HttpSession session, ModelMap map) {
+		return adminService.updateProduct(product, result, picture, session, map);
+	}
+
 	@GetMapping("/manage-products")
 	public String manageProducts(HttpSession session, ModelMap map) {
 		return adminService.manageproducts(session, map);
+	}
+
+	@GetMapping("/delete/{id}")
+	public String deleteProduct(@PathVariable int id,HttpSession session) {
+		return adminService.deleteProduct(id,session);
+	}
+
+	@GetMapping("/edit/{id}")
+	public String editProduct(@PathVariable int id,HttpSession session,ModelMap map) {
+		return adminService.editProduct(id,session,map);
 	}
 
 }

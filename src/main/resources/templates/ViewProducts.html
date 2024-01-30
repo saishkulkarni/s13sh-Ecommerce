@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="ISO-8859-1">
-    <title>Manage Products - MyShop</title>
+    <title>View Products - MyShop</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <style>
         body {
@@ -99,7 +99,7 @@
 	<th:block th:text="${@sessionMessageRemover.removeMessage()}"></th:block>
 
     <div class="container">
-        <h1>Manage Products</h1>
+        <h1>View Products</h1>
         <div th:each="product:${products}">
             <div class="col-md-4 product-card">
                 <div class="card">
@@ -109,8 +109,11 @@
                         <p class="card-text" th:text="${product.description}"></p>
                         <p>Price: <th:block th:text="${product.price}"></th:block>&#8377</p>
                         <p>Stock: <th:block th:text="${product.stock}"></th:block></p>
-                        <a th:href="'/admin/edit/'+${product.id}" class="btn btn-primary">Edit</a>
-                        <a th:href="'/admin/delete/'+${product.id}" class="btn btn-danger">Delete</a>
+                        <th:block th:if="${session.customer}">
+                        <button th:if="${product.stock==0}" disabled>Out of Stock</button>
+                        <button th:if="${product.stock>=1}">Add to Cart</button>
+                        </th:block>
+                        <a href="/signin"><button th:if="${session.customer==null}">Login to Buy</button></a>
                     </div>
                 </div>
             </div>

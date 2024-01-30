@@ -1,5 +1,6 @@
 package com.s13sh.myshop.service.implementation;
 
+import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 
 import com.s13sh.myshop.dao.CustomerDao;
+import com.s13sh.myshop.dao.ProductDao;
 import com.s13sh.myshop.dto.Customer;
+import com.s13sh.myshop.dto.Product;
 import com.s13sh.myshop.helper.AES;
 import com.s13sh.myshop.helper.MailSendingHelper;
 import com.s13sh.myshop.service.CustomerService;
@@ -20,6 +23,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	CustomerDao customerDao;
+
+	@Autowired
+	ProductDao productDao;
 
 	@Autowired
 	MailSendingHelper mailHelper;
@@ -97,6 +103,18 @@ public class CustomerServiceImpl implements CustomerService {
 				session.setAttribute("failMessage", "Invalid Password");
 		}
 		return "Login";
+	}
+
+	@Override
+	public String viewProducts(HttpSession session, ModelMap map) {
+		List<Product> products = productDao.fetchAll();
+		if (products.isEmpty()) {
+			session.setAttribute("failMessage", "No Products Present");
+			return "redirect:/";
+		} else {
+			map.put("products", products);
+			return "ViewProducts";
+		}
 	}
 
 }

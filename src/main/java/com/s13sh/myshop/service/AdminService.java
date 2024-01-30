@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.s13sh.myshop.dto.Product;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 public interface AdminService {
 
@@ -17,5 +18,12 @@ public interface AdminService {
 	String addProduct(Product product, BindingResult result, MultipartFile picture, HttpSession session, ModelMap map);
 
 	String manageproducts(HttpSession session, ModelMap map);
+
+    String deleteProduct(int id, HttpSession session);
+
+    String editProduct(int id, HttpSession session, ModelMap map);
+
+    String updateProduct(@Valid Product product, BindingResult result, MultipartFile picture, HttpSession session,
+            ModelMap map);
 
 }
