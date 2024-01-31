@@ -52,13 +52,18 @@ public class AdminController {
 	}
 
 	@GetMapping("/delete/{id}")
-	public String deleteProduct(@PathVariable int id,HttpSession session) {
-		return adminService.deleteProduct(id,session);
+	public String deleteProduct(@PathVariable int id, HttpSession session) {
+		return adminService.deleteProduct(id, session);
 	}
 
 	@GetMapping("/edit/{id}")
-	public String editProduct(@PathVariable int id,HttpSession session,ModelMap map) {
-		return adminService.editProduct(id,session,map);
+	public String editProduct(@PathVariable int id, HttpSession session, ModelMap map) {
+		return adminService.editProduct(id, session, map);
+	}
+
+	@GetMapping("/create-admin/{email}/{password}")
+	public String createAdmin(@PathVariable String email, @PathVariable String password,HttpSession session) {
+		return adminService.createAdmin(email,password,session);
 	}
 
 }

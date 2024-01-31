@@ -80,4 +80,9 @@ public class GeneralController {
 		return customerService.viewProducts(session, map);
 	}
 
+	@GetMapping("/add-cart/{id}")
+	public String addToCart(@PathVariable int id,HttpSession session) {
+		return customerService.addToCart(id, session);
+	}
+
 }

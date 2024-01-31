@@ -19,4 +19,6 @@ public interface CustomerService {
 	String login(String email, String password, ModelMap map, HttpSession session);
 
     String viewProducts(HttpSession session, ModelMap map);
+
+    String addToCart(int id, HttpSession session);
 }

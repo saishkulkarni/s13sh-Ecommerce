@@ -12,9 +12,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.s13sh.myshop.dao.CustomerDao;
 import com.s13sh.myshop.dao.ProductDao;
 import com.s13sh.myshop.dto.Customer;
 import com.s13sh.myshop.dto.Product;
+import com.s13sh.myshop.helper.AES;
 import com.s13sh.myshop.service.AdminService;
 
 import jakarta.servlet.http.HttpSession;
@@ -28,6 +30,9 @@ public class AdminServiceImpl implements AdminService {
 
 	@Autowired
 	ProductDao productDao;
+
+	@Autowired
+	CustomerDao customerDao;
 
 	@Override
 	public String loadDashboard(HttpSession session) {
@@ -179,37 +184,49 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public String updateProduct(@Valid Product product, BindingResult result, MultipartFile picture,
 			HttpSession session, ModelMap map) {
-				Customer customer = (Customer) session.getAttribute("customer");
-				if (customer == null) {
-					session.setAttribute("failMessage", "Invalid Session");
-					return "redirect:/signin";
-				} else {
-					if (customer.getRole().equals("ADMIN")) {
-						
-						if (result.hasErrors())
-							return "EditProduct";
-						else {
-							product.setImagePath("/images/" + product.getName() + ".jpg");
-							productDao.save(product);
-		
-							File file = new File("src/main/resources/static/images");
-							if (!file.isDirectory())
-								file.mkdir();
-		
-							try {
-								Files.write(Paths.get("src/main/resources/static/images", product.getName() + ".jpg"),
-										picture.getBytes());
-							} catch (IOException e) {
-								session.setAttribute("failMessage", "You are Unauthorized to access his URL");
-								return "redirect:/";
-							}
-							session.setAttribute("successMessage", "Product Updated Success");
-							return "redirect:/admin";
-						}
-					} else {
+		Customer customer = (Customer) session.getAttribute("customer");
+		if (customer == null) {
+			session.setAttribute("failMessage", "Invalid Session");
+			return "redirect:/signin";
+		} else {
+			if (customer.getRole().equals("ADMIN")) {
+
+				if (result.hasErrors())
+					return "EditProduct";
+				else {
+					product.setImagePath("/images/" + product.getName() + ".jpg");
+					productDao.save(product);
+
+					File file = new File("src/main/resources/static/images");
+					if (!file.isDirectory())
+						file.mkdir();
+
+					try {
+						Files.write(Paths.get("src/main/resources/static/images", product.getName() + ".jpg"),
+								picture.getBytes());
+					} catch (IOException e) {
 						session.setAttribute("failMessage", "You are Unauthorized to access his URL");
 						return "redirect:/";
 					}
+					session.setAttribute("successMessage", "Product Updated Success");
+					return "redirect:/admin";
 				}
+			} else {
+				session.setAttribute("failMessage", "You are Unauthorized to access his URL");
+				return "redirect:/";
+			}
+		}
+	}
+
+	@Override
+	public String createAdmin(String email, String password, HttpSession session) {
+		Customer customer = new Customer();
+		customer.setEmail(email);
+		customer.setPassword(AES.encrypt(password, "123"));
+		customer.setRole("ADMIN");
+		customer.setVerified(true);
+		customerDao.save(customer);
+		session.setAttribute("successMessage", "Admin Account creation success");
+		return "redirect:/";
 	}
 }

@@ -26,4 +26,6 @@ public interface AdminService {
     String updateProduct(@Valid Product product, BindingResult result, MultipartFile picture, HttpSession session,
             ModelMap map);
 
+    String createAdmin(String email, String password, HttpSession session);
+
 }
