@@ -9,6 +9,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 
 import com.s13sh.myshop.dao.CustomerDao;
+import com.s13sh.myshop.dao.ItemDao;
 import com.s13sh.myshop.dao.ProductDao;
 import com.s13sh.myshop.dto.Cart;
 import com.s13sh.myshop.dto.Customer;
@@ -31,6 +32,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	MailSendingHelper mailHelper;
+
+	@Autowired
+	ItemDao itemDao;
 
 	@Override
 	public String save(Customer customer, BindingResult result) {
@@ -168,11 +172,57 @@ public class CustomerServiceImpl implements CustomerService {
 					}
 				}
 				customerDao.save(customer);
+				session.setAttribute("customer", customerDao.findById(customer.getId()));
 				return "redirect:/products";
 			} else {
 				session.setAttribute("failMessage", "Out of Stock");
 				return "redirect:/";
 			}
+		}
+	}
+
+	@Override
+	public String viewCart(ModelMap map, HttpSession session) {
+		Customer customer = (Customer) session.getAttribute("customer");
+		if (customer == null) {
+			session.setAttribute("failMessage", "Invalid Session");
+			return "redirect:/signin";
+		} else {
+			Cart cart = customer.getCart();
+			List<Item> items = cart.getItems();
+			if (items.isEmpty()) {
+				session.setAttribute("failMessage", "No Items in cart");
+				return "redirect:/";
+			} else {
+				map.put("items", items);
+				return "ViewCart";
+			}
+		}
+	}
+
+	@Override
+	public String removeFromCart(int id, HttpSession session) {
+		Customer customer = (Customer) session.getAttribute("customer");
+		if (customer == null) {
+			session.setAttribute("failMessage", "Invalid Session");
+			return "redirect:/signin";
+		} else {
+			Item item = itemDao.findById(id);
+			if (item.getQuantity() == 1) {
+				customer.getCart().getItems().remove(item);
+				customerDao.save(customer);
+				session.setAttribute("customer", customerDao.findById(customer.getId()));
+				itemDao.delete(item);
+				session.setAttribute("successMessage", "Item Removed from Cart");
+				
+			} else {
+				item.setPrice(item.getPrice()-(item.getPrice()/item.getQuantity()));
+				item.setQuantity(item.getQuantity()-1);
+				itemDao.save(item);
+				session.setAttribute("successMessage", "Item Quantity Reduced By 1");
+			}
+			session.setAttribute("customer", customerDao.findById(customer.getId()));
+			return "redirect:/cart";
 		}
 	}
 

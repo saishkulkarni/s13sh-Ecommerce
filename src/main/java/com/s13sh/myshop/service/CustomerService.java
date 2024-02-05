@@ -21,4 +21,8 @@ public interface CustomerService {
     String viewProducts(HttpSession session, ModelMap map);
 
     String addToCart(int id, HttpSession session);
+
+	String viewCart(ModelMap map, HttpSession session);
+
+	String removeFromCart(int id, HttpSession session);
 }

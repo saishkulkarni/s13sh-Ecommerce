@@ -84,5 +84,15 @@ public class GeneralController {
 	public String addToCart(@PathVariable int id,HttpSession session) {
 		return customerService.addToCart(id, session);
 	}
+	
+	@GetMapping("/cart")
+	public String viewCart(HttpSession session,ModelMap map) {
+		return customerService.viewCart(map, session);
+	}
+	
+	@GetMapping("/remove-cart/{id}")
+	public String removeFromCart(@PathVariable int id,HttpSession session) {
+		return customerService.removeFromCart(id, session);
+	}
 
 }
