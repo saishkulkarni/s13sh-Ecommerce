@@ -34,4 +34,8 @@ public class ProductDao {
 		productRepository.delete(product);
 	}
 
+	public Product findByName(String name) {
+		return productRepository.findByName(name);
+	}
+
 }

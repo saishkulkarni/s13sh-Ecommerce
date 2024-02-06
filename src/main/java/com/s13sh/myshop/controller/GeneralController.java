@@ -81,18 +81,23 @@ public class GeneralController {
 	}
 
 	@GetMapping("/add-cart/{id}")
-	public String addToCart(@PathVariable int id,HttpSession session) {
+	public String addToCart(@PathVariable int id, HttpSession session) {
 		return customerService.addToCart(id, session);
 	}
-	
+
 	@GetMapping("/cart")
-	public String viewCart(HttpSession session,ModelMap map) {
+	public String viewCart(HttpSession session, ModelMap map) {
 		return customerService.viewCart(map, session);
 	}
-	
+
 	@GetMapping("/remove-cart/{id}")
-	public String removeFromCart(@PathVariable int id,HttpSession session) {
+	public String removeFromCart(@PathVariable int id, HttpSession session) {
 		return customerService.removeFromCart(id, session);
+	}
+
+	@GetMapping("/payment")
+	public String paymentPage(HttpSession session,ModelMap map) {
+		return customerService.paymentPage(session,map);
 	}
 
 }

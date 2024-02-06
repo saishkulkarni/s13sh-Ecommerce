@@ -1,20 +1,27 @@
 package com.s13sh.myshop.service.implementation;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
 import com.s13sh.myshop.dao.CustomerDao;
 import com.s13sh.myshop.dao.ItemDao;
 import com.s13sh.myshop.dao.ProductDao;
+import com.s13sh.myshop.dao.ShoppingOrderDao;
 import com.s13sh.myshop.dto.Cart;
 import com.s13sh.myshop.dto.Customer;
 import com.s13sh.myshop.dto.Item;
 import com.s13sh.myshop.dto.Product;
+import com.s13sh.myshop.dto.ShoppingOrder;
 import com.s13sh.myshop.helper.AES;
 import com.s13sh.myshop.helper.MailSendingHelper;
 import com.s13sh.myshop.service.CustomerService;
@@ -35,6 +42,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	ItemDao itemDao;
+
+	@Autowired
+	ShoppingOrderDao orderDao;
 
 	@Override
 	public String save(Customer customer, BindingResult result) {
@@ -214,15 +224,70 @@ public class CustomerServiceImpl implements CustomerService {
 				session.setAttribute("customer", customerDao.findById(customer.getId()));
 				itemDao.delete(item);
 				session.setAttribute("successMessage", "Item Removed from Cart");
-				
+
 			} else {
-				item.setPrice(item.getPrice()-(item.getPrice()/item.getQuantity()));
-				item.setQuantity(item.getQuantity()-1);
+				item.setPrice(item.getPrice() - (item.getPrice() / item.getQuantity()));
+				item.setQuantity(item.getQuantity() - 1);
 				itemDao.save(item);
 				session.setAttribute("successMessage", "Item Quantity Reduced By 1");
 			}
 			session.setAttribute("customer", customerDao.findById(customer.getId()));
 			return "redirect:/cart";
+		}
+	}
+
+	@Override
+	public String paymentPage(HttpSession session, ModelMap map) {
+		Customer customer = (Customer) session.getAttribute("customer");
+		if (customer == null) {
+			session.setAttribute("failMessage", "Invalid Session");
+			return "redirect:/signin";
+		} else {
+
+			List<Item> items = customer.getCart().getItems();
+			if (items.isEmpty()) {
+				session.setAttribute("failMessage", "Nothing to Buy");
+				return "redirect:/";
+			} else {
+				double price = items.stream().mapToDouble(x -> x.getPrice()).sum();
+				try {
+					RazorpayClient razorpay = new RazorpayClient("rzp_test_NL2VDewmKxugHZ", "OYO8g3i8aCPLCfn8piTOYlbi");
+
+					JSONObject orderRequest = new JSONObject();
+					orderRequest.put("amount", price * 100);
+					orderRequest.put("currency", "INR");
+
+					Order order = razorpay.orders.create(orderRequest);
+
+					ShoppingOrder myOrder = new ShoppingOrder();
+					myOrder.setDateTime(LocalDateTime.now());
+					myOrder.setItems(items);
+					myOrder.setOrderId(order.get("id"));
+					myOrder.setStatus(order.get("status"));
+					myOrder.setTotalPrice(price);
+
+					orderDao.saveOrder(myOrder);
+
+					for (Item item : items) {
+						Product product = productDao.findByName(item.getName());
+						product.setStock(product.getStock() - item.getQuantity());
+						productDao.save(product);
+					}
+
+					map.put("key", "rzp_test_NL2VDewmKxugHZ");
+					map.put("myOrder", myOrder);
+					map.put("customer", customer);
+
+					customer.getOrders().add(myOrder);
+					customerDao.save(customer);
+					session.setAttribute("customer", customerDao.findById(customer.getId()));
+					return "PaymentPage";
+
+				} catch (RazorpayException e) {
+					e.printStackTrace();
+					return "redirect:/";
+				}
+			}
 		}
 	}
 
