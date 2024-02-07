@@ -1,6 +1,7 @@
 package com.s13sh.myshop.service.implementation;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -287,6 +288,43 @@ public class CustomerServiceImpl implements CustomerService {
 					e.printStackTrace();
 					return "redirect:/";
 				}
+			}
+		}
+	}
+
+	@Override
+	public String confirmOrder(HttpSession session, int id, String razorpay_payment_id) {
+		Customer customer = (Customer) session.getAttribute("customer");
+		if (customer == null) {
+			session.setAttribute("failMessage", "Invalid Session");
+			return "redirect:/signin";
+		} else {
+			ShoppingOrder order = orderDao.findOrderById(id);
+			order.setPaymnetId(razorpay_payment_id);
+			order.setStatus("success");
+			orderDao.saveOrder(order);
+			customer.getCart().setItems(new ArrayList<Item>());
+			customerDao.save(customer);
+			session.setAttribute("customer", customerDao.findById(customer.getId()));
+			session.setAttribute("successMessage", "Order Placed Success");
+			return "redirect:/";
+		}
+	}
+
+	@Override
+	public String viewOrders(HttpSession session, ModelMap map) {
+		Customer customer = (Customer) session.getAttribute("customer");
+		if (customer == null) {
+			session.setAttribute("failMessage", "Invalid Session");
+			return "redirect:/signin";
+		} else {
+			List<ShoppingOrder> orders = customer.getOrders();
+			if (orders == null || orders.isEmpty()) {
+				session.setAttribute("failMessage", "No Orders Yet");
+				return "redirect:/";
+			} else {
+				map.put("orders", orders);
+				return "ViewOrders";
 			}
 		}
 	}
