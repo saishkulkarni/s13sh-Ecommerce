@@ -1,112 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block th:insert="~{fragments/header}"></th:block>
     <title>Edit Product - MyShop</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        .navbar {
-            background-color: #28a745;
-        }
-
-        .navbar-brand {
-            color: #ffffff;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .navbar-nav .nav-link {
-            color: #ffffff;
-        }
-
-        .navbar-nav .nav-item.active .nav-link {
-            color: #ffffff;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        img{
-            height:150px;
-            width: 150px;
-        }
-        h2 {
-            color: #28a745;
-        }
-
-        .product {
-            border: 1px solid #dee2e6;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-        
-        span.error-message {
-			color: red;
-			font-size: 0.8em;
-		}
-
-        footer {
-            background-color: #343a40;
-            color: #ffffff;
-            padding: 15px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/addproduct.css">
 </head>
-
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <a class="navbar-brand" href="/">MyShop</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"><a class="nav-link" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <th:block th:if="${session.customer==null}">
-                    <li class="nav-item"><a class="nav-link" href="/signin">Sign In</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/signup">Sign Up</a></li>
-                </th:block>
-                <th:block th:if="${session.customer}">
-                    <th:block th:if="${session.customer.role=='ADMIN'}">
-                        <li class="nav-item"><a class="nav-link" href="/admin">Admin Dashboard</a></li>
-                    </th:block>
-                    <li class="nav-item"><a class="nav-link" href="/cart"><i class="fas fa-shopping-cart"></i> Cart</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
-                </th:block>
-            </ul>
-        </div>
-    </nav>
-
-    <div class="alert alert-success" th:if="${session.successMessage}" role="alert"
-        th:text="${session.successMessage}"></div>
-    <div class="alert alert-danger" th:if="${session.failMessage}" role="alert"
-        th:text="${session.failMessage}"></div>
-    <th:block th:text="${@sessionMessageRemover.removeMessage()}"></th:block>
-
+    <th:block th:insert="~{fragments/navbar}"></th:block>
+    <th:block th:insert="~{fragments/message}"></th:block>
     <div class="container mt-4">
         <h2>Edit Product</h2>
         <form action="/admin/update-product" method="post" th:object="${product}" enctype="multipart/form-data">
@@ -151,13 +52,6 @@
             <button type="submit" class="btn btn-success">Update Product</button>
         </form>
     </div>
-
-    <footer class="py-3 text-center"> &copy; 2024 s13shMyShop </footer>
-
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="https://kit.fontawesome.com/your-font-awesome-kit-id.js" crossorigin="anonymous"></script>
-</body>
-
+    <th:block th:insert="~{fragments/footer}"></th:block>
+    </body>
 </html>

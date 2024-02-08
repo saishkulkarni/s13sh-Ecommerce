@@ -22,7 +22,7 @@ public class ShoppingOrder {
 	private LocalDateTime dateTime;
 	private double totalPrice;
 	private String status;
-	private String paymnetId;
+	private String paymentId;
 
 	@OneToMany(fetch = FetchType.EAGER)
 	private List<Item> items = new ArrayList<Item>();

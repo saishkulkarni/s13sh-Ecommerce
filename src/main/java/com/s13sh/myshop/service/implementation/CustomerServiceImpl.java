@@ -300,7 +300,7 @@ public class CustomerServiceImpl implements CustomerService {
 			return "redirect:/signin";
 		} else {
 			ShoppingOrder order = orderDao.findOrderById(id);
-			order.setPaymnetId(razorpay_payment_id);
+			order.setPaymentId(razorpay_payment_id);
 			order.setStatus("success");
 			orderDao.saveOrder(order);
 			customer.getCart().setItems(new ArrayList<Item>());
