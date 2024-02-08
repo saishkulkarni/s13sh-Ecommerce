@@ -269,12 +269,6 @@ public class CustomerServiceImpl implements CustomerService {
 
 					orderDao.saveOrder(myOrder);
 
-					for (Item item : items) {
-						Product product = productDao.findByName(item.getName());
-						product.setStock(product.getStock() - item.getQuantity());
-						productDao.save(product);
-					}
-
 					map.put("key", "rzp_test_NL2VDewmKxugHZ");
 					map.put("myOrder", myOrder);
 					map.put("customer", customer);
@@ -299,6 +293,11 @@ public class CustomerServiceImpl implements CustomerService {
 			session.setAttribute("failMessage", "Invalid Session");
 			return "redirect:/signin";
 		} else {
+			for (Item item : customer.getCart().getItems()) {
+				Product product = productDao.findByName(item.getName());
+				product.setStock(product.getStock() - item.getQuantity());
+				productDao.save(product);
+			}
 			ShoppingOrder order = orderDao.findOrderById(id);
 			order.setPaymentId(razorpay_payment_id);
 			order.setStatus("success");
