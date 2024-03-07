@@ -1,5 +1,7 @@
 package com.s13sh.myshop.controller;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.s13sh.myshop.dto.Customer;
 import com.s13sh.myshop.service.CustomerService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -41,11 +44,11 @@ public class GeneralController {
 	}
 
 	@PostMapping("/signup")
-	public String signup(@Valid Customer customer, BindingResult result) {
+	public String signup(@Valid Customer customer, BindingResult result,HttpServletResponse response)  throws IOException{
 		if (result.hasErrors())
 			return "Signup";
 		else
-			return customerService.save(customer, result);
+			return customerService.save(customer, result, response);
 	}
 
 	@GetMapping("/send-otp/{id}")
@@ -54,8 +57,8 @@ public class GeneralController {
 	}
 
 	@PostMapping("/verify-otp")
-	public String verifyOtp(@RequestParam int id, @RequestParam int otp, ModelMap map, HttpSession session) {
-		return customerService.verifyOtp(id, otp, map, session);
+	public String verifyOtp(@RequestParam int id, @RequestParam int otp, ModelMap map, HttpSession session,HttpServletResponse response) throws IOException {
+		return customerService.verifyOtp(id, otp, map, session, response);
 	}
 
 	@GetMapping("/resend-otp/{id}")
@@ -64,8 +67,8 @@ public class GeneralController {
 	}
 
 	@PostMapping("/login")
-	public String login(@RequestParam String email, @RequestParam String password, ModelMap map, HttpSession session) {
-		return customerService.login(email, password, map, session);
+	public String login(@RequestParam String email, @RequestParam String password, ModelMap map, HttpSession session,HttpServletResponse response)  throws IOException{
+		return customerService.login(email, password, map, session, response);
 	}
 
 	@GetMapping("/logout")
@@ -76,37 +79,37 @@ public class GeneralController {
 	}
 
 	@GetMapping("/products")
-	public String viewProducts(ModelMap map, HttpSession session) {
-		return customerService.viewProducts(session, map);
+	public String viewProducts(ModelMap map, HttpSession session,HttpServletResponse response) throws IOException {
+		return customerService.viewProducts(session, map, response);
 	}
 
 	@GetMapping("/add-cart/{id}")
-	public String addToCart(@PathVariable int id, HttpSession session) {
-		return customerService.addToCart(id, session);
+	public String addToCart(@PathVariable int id, HttpSession session,HttpServletResponse response)  throws IOException{
+		return customerService.addToCart(id, session, response);
 	}
 
 	@GetMapping("/cart")
-	public String viewCart(HttpSession session, ModelMap map) {
-		return customerService.viewCart(map, session);
+	public String viewCart(HttpSession session, ModelMap map,HttpServletResponse response) throws IOException {
+		return customerService.viewCart(map, session, response);
 	}
 
 	@GetMapping("/remove-cart/{id}")
-	public String removeFromCart(@PathVariable int id, HttpSession session) {
-		return customerService.removeFromCart(id, session);
+	public String removeFromCart(@PathVariable int id, HttpSession session,HttpServletResponse response) throws IOException {
+		return customerService.removeFromCart(id, session, response);
 	}
 
 	@GetMapping("/payment")
-	public String paymentPage(HttpSession session,ModelMap map) {
-		return customerService.paymentPage(session,map);
+	public String paymentPage(HttpSession session,ModelMap map,HttpServletResponse response) throws IOException {
+		return customerService.paymentPage(session,map, response);
 	}
 
 	@PostMapping("/confirm-order/{id}")
-	public String confirmOrder(HttpSession session,@PathVariable int id,@RequestParam String razorpay_payment_id) {
-		return customerService.confirmOrder(session,id,razorpay_payment_id);
+	public String confirmOrder(HttpSession session,@PathVariable int id,@RequestParam String razorpay_payment_id,HttpServletResponse response) throws IOException {
+		return customerService.confirmOrder(session,id,razorpay_payment_id, response);
 	}
 	
 	@GetMapping("/orders")
-	public String viewOrders(HttpSession session,ModelMap map) {
-		return customerService.viewOrders(session,map);
+	public String viewOrders(HttpSession session,ModelMap map,HttpServletResponse response)  throws IOException{
+		return customerService.viewOrders(session,map, response);
 	}
 }
