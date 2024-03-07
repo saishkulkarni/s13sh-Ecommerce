@@ -27,6 +27,7 @@ import com.s13sh.myshop.helper.AES;
 import com.s13sh.myshop.helper.MailSendingHelper;
 import com.s13sh.myshop.service.CustomerService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Service
@@ -48,7 +49,7 @@ public class CustomerServiceImpl implements CustomerService {
 	ShoppingOrderDao orderDao;
 
 	@Override
-	public String save(Customer customer, BindingResult result) {
+	public String save(Customer customer, BindingResult result,HttpServletResponse response) {
 		if (customerDao.checkEmailDuplicate(customer.getEmail()))
 			result.rejectValue("email", "error.email", "* Account Already Exists with this Email");
 		if (customerDao.checkMobileDuplicate(customer.getMobile()))
@@ -60,19 +61,21 @@ public class CustomerServiceImpl implements CustomerService {
 			customer.setPassword(AES.encrypt(customer.getPassword(), "123"));
 			customer.setRole("USER");
 			customerDao.save(customer);
-			return "redirect:/send-otp/" + customer.getId();
+			response.sendRedirect("/send-otp/" + customer.getId());
+			return null;
 		}
 	}
 
 	@Override
-	public String verifyOtp(int id, int otp, ModelMap map, HttpSession session) {
+	public String verifyOtp(int id, int otp, ModelMap map, HttpSession session,HttpServletResponse response) {
 		Customer customer = customerDao.findById(id);
 		System.out.println("*******2********");
 		if (customer.getOtp() == otp) {
 			customer.setVerified(true);
 			customerDao.save(customer);
 			session.setAttribute("successMessage", "Account Created Success");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return null;
 		} else {
 			map.put("failMessage", "Invalid Otp, Try Again!");
 			map.put("id", id);
@@ -103,7 +106,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String login(String email, String password, ModelMap map, HttpSession session) {
+	public String login(String email, String password, ModelMap map, HttpSession session,HttpServletResponse response) {
 		Customer customer = customerDao.findByEmail(email);
 		if (customer == null)
 			session.setAttribute("failMessage", "Invalid Email");
@@ -112,7 +115,8 @@ public class CustomerServiceImpl implements CustomerService {
 				if (customer.isVerified()) {
 					session.setAttribute("customer", customer);
 					session.setAttribute("successMessage", "Login Success");
-					return "redirect:/";
+					response.sendRedirect("/");
+					return null;
 				} else {
 					return resendOtp(customer.getId(), map);
 				}
@@ -123,11 +127,12 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String viewProducts(HttpSession session, ModelMap map) {
+	public String viewProducts(HttpSession session, ModelMap map,HttpServletResponse response) {
 		List<Product> products = productDao.fetchAll();
 		if (products.isEmpty()) {
 			session.setAttribute("failMessage", "No Products Present");
-			return "redirect:/";
+			response.sendRedirect("/");
+			return null;
 		} else {
 			map.put("products", products);
 			return "ViewProducts";
@@ -135,11 +140,12 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String addToCart(int id, HttpSession session) {
+	public String addToCart(int id, HttpSession session,HttpServletResponse response) {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/";
+			response.sendRedirect("/");
+			return null;
 		} else {
 			Product product = productDao.findById(id);
 			if (product.getStock() > 0) {
@@ -184,26 +190,30 @@ public class CustomerServiceImpl implements CustomerService {
 				}
 				customerDao.save(customer);
 				session.setAttribute("customer", customerDao.findById(customer.getId()));
-				return "redirect:/products";
+				response.sendRedirect("/products");
+				return null;
 			} else {
 				session.setAttribute("failMessage", "Out of Stock");
-				return "redirect:/";
+				response.sendRedirect("/");
+				return null;
 			}
 		}
 	}
 
 	@Override
-	public String viewCart(ModelMap map, HttpSession session) {
+	public String viewCart(ModelMap map, HttpSession session,HttpServletResponse response) {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return null;
 		} else {
 			Cart cart = customer.getCart();
 			List<Item> items = cart.getItems();
 			if (items.isEmpty()) {
 				session.setAttribute("failMessage", "No Items in cart");
-				return "redirect:/";
+				response.sendRedirect("/");
+				return null;
 			} else {
 				map.put("items", items);
 				return "ViewCart";
@@ -212,11 +222,12 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String removeFromCart(int id, HttpSession session) {
+	public String removeFromCart(int id, HttpSession session,HttpServletResponse response) {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return null;
 		} else {
 			Item item = itemDao.findById(id);
 			if (item.getQuantity() == 1) {
@@ -233,22 +244,25 @@ public class CustomerServiceImpl implements CustomerService {
 				session.setAttribute("successMessage", "Item Quantity Reduced By 1");
 			}
 			session.setAttribute("customer", customerDao.findById(customer.getId()));
-			return "redirect:/cart";
+			response.sendRedirect("/cart");
+			return null;
 		}
 	}
 
 	@Override
-	public String paymentPage(HttpSession session, ModelMap map) {
+	public String paymentPage(HttpSession session, ModelMap map,HttpServletResponse response) {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return null;
 		} else {
 
 			List<Item> items = customer.getCart().getItems();
 			if (items.isEmpty()) {
 				session.setAttribute("failMessage", "Nothing to Buy");
-				return "redirect:/";
+				response.sendRedirect("/");
+				return null;
 			} else {
 				double price = items.stream().mapToDouble(x -> x.getPrice()).sum();
 				try {
@@ -280,18 +294,20 @@ public class CustomerServiceImpl implements CustomerService {
 
 				} catch (RazorpayException e) {
 					e.printStackTrace();
-					return "redirect:/";
+					response.sendRedirect("/");
+					return null;
 				}
 			}
 		}
 	}
 
 	@Override
-	public String confirmOrder(HttpSession session, int id, String razorpay_payment_id) {
+	public String confirmOrder(HttpSession session, int id, String razorpay_payment_id,HttpServletResponse response) {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return null;
 		} else {
 			for (Item item : customer.getCart().getItems()) {
 				Product product = productDao.findByName(item.getName());
@@ -306,21 +322,24 @@ public class CustomerServiceImpl implements CustomerService {
 			customerDao.save(customer);
 			session.setAttribute("customer", customerDao.findById(customer.getId()));
 			session.setAttribute("successMessage", "Order Placed Success");
-			return "redirect:/";
+			response.sendRedirect("/");
+			return null;
 		}
 	}
 
 	@Override
-	public String viewOrders(HttpSession session, ModelMap map) {
+	public String viewOrders(HttpSession session, ModelMap map,HttpServletResponse response) {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/");
+			return null;
 		} else {
 			List<ShoppingOrder> orders = customer.getOrders();
 			if (orders == null || orders.isEmpty()) {
 				session.setAttribute("failMessage", "No Orders Yet");
-				return "redirect:/";
+				response.sendRedirect("/");
+				return null;
 			} else {
 				map.put("orders", orders);
 				return "ViewOrders";

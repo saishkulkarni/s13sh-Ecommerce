@@ -1,5 +1,7 @@
 package com.s13sh.myshop.service;
 
+import java.io.IOException;
+
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 
@@ -8,7 +10,7 @@ import com.s13sh.myshop.dto.Customer;
 import jakarta.servlet.http.HttpSession;
 
 public interface CustomerService {
-	String save(Customer customer, BindingResult result);
+	String save(Customer customer, BindingResult result)throws IOException;
 
 	String verifyOtp(int id, int otp, ModelMap map, HttpSession session);
 

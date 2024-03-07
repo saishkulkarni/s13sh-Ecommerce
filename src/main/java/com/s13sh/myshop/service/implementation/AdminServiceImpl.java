@@ -19,6 +19,7 @@ import com.s13sh.myshop.dto.Product;
 import com.s13sh.myshop.helper.AES;
 import com.s13sh.myshop.service.AdminService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -35,45 +36,50 @@ public class AdminServiceImpl implements AdminService {
 	CustomerDao customerDao;
 
 	@Override
-	public String loadDashboard(HttpSession session) {
+	public String loadDashboard(HttpSession session,HttpServletResponse response) throws IOException {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return "null";
 		} else {
 			if (customer.getRole().equals("ADMIN"))
 				return "AdminDashBoard";
 			else {
 				session.setAttribute("failMessage", "You are Unauthorized to access his URL");
-				return "redirect:/";
+				response.sendRedirect("/");
+				return "null";
 			}
 		}
 	}
 
 	@Override
-	public String loadAddProduct(HttpSession session, ModelMap map) {
+	public String loadAddProduct(HttpSession session, ModelMap map,HttpServletResponse response) throws IOException {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return null;
 		} else {
 			if (customer.getRole().equals("ADMIN")) {
 				map.put("product", product);
 				return "AddProduct";
 			} else {
 				session.setAttribute("failMessage", "You are Unauthorized to access his URL");
-				return "redirect:/";
+				response.sendRedirect("/");
+				return null;
 			}
 		}
 	}
 
 	@Override
 	public String addProduct(Product product, BindingResult result, MultipartFile picture, HttpSession session,
-			ModelMap map) {
+			ModelMap map,HttpServletResponse response) throws IOException {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return null;
 		} else {
 			if (customer.getRole().equals("ADMIN")) {
 				if (productDao.checkName(product.getName()))
@@ -99,10 +105,12 @@ public class AdminServiceImpl implements AdminService {
 								picture.getBytes());
 					} catch (IOException e) {
 						session.setAttribute("failMessage", "You are Unauthorized to access his URL");
-						return "redirect:/";
+						response.sendRedirect("/");
+						return null;
 					}
 					session.setAttribute("successMessage", "Product Added Success");
-					return "redirect:/admin";
+					response.sendRedirect("/admin");
+					return null;
 
 					// } catch (IOException e) {
 					// session.setAttribute("failMessage", "You are Unauthorized to access his
@@ -112,40 +120,45 @@ public class AdminServiceImpl implements AdminService {
 				}
 			} else {
 				session.setAttribute("failMessage", "You are Unauthorized to access his URL");
-				return "redirect:/";
+				response.sendRedirect("/");
+				return null;
 			}
 		}
 	}
 
 	@Override
-	public String manageproducts(HttpSession session, ModelMap map) {
+	public String manageproducts(HttpSession session, ModelMap map,HttpServletResponse response) throws IOException {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return null;
 		} else {
 			if (customer.getRole().equals("ADMIN")) {
 				List<Product> products = productDao.fetchAll();
 				if (products.isEmpty()) {
 					session.setAttribute("failMessage", "No Products Present");
-					return "redirect:/admin";
+					response.sendRedirect("/admin");
+					return null;
 				} else {
 					map.put("products", products);
 					return "ManageProducts";
 				}
 			} else {
 				session.setAttribute("failMessage", "You are Unauthorized to access his URL");
-				return "redirect:/";
+				response.sendRedirect("/");
+				return null;
 			}
 		}
 	}
 
 	@Override
-	public String deleteProduct(int id, HttpSession session) {
+	public String deleteProduct(int id, HttpSession session,HttpServletResponse response)throws IOException {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return null;
 		} else {
 			if (customer.getRole().equals("ADMIN")) {
 				Product product = productDao.findById(id);
@@ -154,20 +167,23 @@ public class AdminServiceImpl implements AdminService {
 					file.delete();
 				productDao.delete(product);
 				session.setAttribute("successMessage", "Product Deleted Success");
-				return "redirect:/admin/manage-products";
+				response.sendRedirect("/admin/manage-products");
+				return null;
 			} else {
 				session.setAttribute("failMessage", "You are Unauthorized to access his URL");
-				return "redirect:/";
+				response.sendRedirect("/");
+				return null;
 			}
 		}
 	}
 
 	@Override
-	public String editProduct(int id, HttpSession session, ModelMap map) {
+	public String editProduct(int id, HttpSession session, ModelMap map,HttpServletResponse response) throws IOException{
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return null;
 		} else {
 			if (customer.getRole().equals("ADMIN")) {
 				Product product = productDao.findById(id);
@@ -175,7 +191,8 @@ public class AdminServiceImpl implements AdminService {
 				return "EditProduct";
 			} else {
 				session.setAttribute("failMessage", "You are Unauthorized to access his URL");
-				return "redirect:/";
+				response.sendRedirect("/");
+				return null;
 			}
 		}
 
@@ -183,11 +200,12 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	public String updateProduct(@Valid Product product, BindingResult result, MultipartFile picture,
-			HttpSession session, ModelMap map) {
+			HttpSession session, ModelMap map,HttpServletResponse response) throws IOException{
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
-			return "redirect:/signin";
+			response.sendRedirect("/signin");
+			return null;
 		} else {
 			if (customer.getRole().equals("ADMIN")) {
 
@@ -206,20 +224,23 @@ public class AdminServiceImpl implements AdminService {
 								picture.getBytes());
 					} catch (IOException e) {
 						session.setAttribute("failMessage", "You are Unauthorized to access his URL");
-						return "redirect:/";
+						response.sendRedirect("/");
+						return null;
 					}
 					session.setAttribute("successMessage", "Product Updated Success");
-					return "redirect:/admin";
+					response.sendRedirect("/admin");
+					return null;
 				}
 			} else {
 				session.setAttribute("failMessage", "You are Unauthorized to access his URL");
-				return "redirect:/";
+				response.sendRedirect("/");
+				return null;
 			}
 		}
 	}
 
 	@Override
-	public String createAdmin(String email, String password, HttpSession session) {
+	public String createAdmin(String email, String password, HttpSession session,HttpServletResponse response) throws IOException{
 		if(!customerDao.checkEmailDuplicate(email)) {
 		Customer customer = new Customer();
 		customer.setEmail(email);
@@ -228,10 +249,12 @@ public class AdminServiceImpl implements AdminService {
 		customer.setVerified(true);
 		customerDao.save(customer);
 		session.setAttribute("successMessage", "Admin Account creation success");
-		return "redirect:/";
+		response.sendRedirect("/");
+		return null;
 		}else {
 			session.setAttribute("failMessage", "Admin Account Already Exists");
-			return "redirect:/";
+			response.sendRedirect("/");
+			return null;
 		}
 	}
 }
