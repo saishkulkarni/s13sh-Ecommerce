@@ -7,30 +7,31 @@ import org.springframework.validation.BindingResult;
 
 import com.s13sh.myshop.dto.Customer;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 public interface CustomerService {
-	String save(Customer customer, BindingResult result)throws IOException;
+	String save(Customer customer, BindingResult result,HttpServletResponse response)throws IOException;
 
-	String verifyOtp(int id, int otp, ModelMap map, HttpSession session);
+	String verifyOtp(int id, int otp, ModelMap map, HttpSession session,HttpServletResponse response)throws IOException;
 
 	String sendOtp(int id, ModelMap map);
 
 	String resendOtp(int id, ModelMap map);
 
-	String login(String email, String password, ModelMap map, HttpSession session);
+	String login(String email, String password, ModelMap map, HttpSession session,HttpServletResponse response)throws IOException;
 
-    String viewProducts(HttpSession session, ModelMap map);
+    String viewProducts(HttpSession session, ModelMap map,HttpServletResponse response)throws IOException;
 
-    String addToCart(int id, HttpSession session);
+    String addToCart(int id, HttpSession session,HttpServletResponse response)throws IOException;
 
-	String viewCart(ModelMap map, HttpSession session);
+	String viewCart(ModelMap map, HttpSession session,HttpServletResponse response)throws IOException;
 
-	String removeFromCart(int id, HttpSession session);
+	String removeFromCart(int id, HttpSession session,HttpServletResponse response)throws IOException;
 
-	String paymentPage(HttpSession session, ModelMap map);
+	String paymentPage(HttpSession session, ModelMap map,HttpServletResponse response)throws IOException;
 
-	String confirmOrder(HttpSession session, int id, String razorpay_payment_id);
+	String confirmOrder(HttpSession session, int id, String razorpay_payment_id,HttpServletResponse response)throws IOException;
 
-	String viewOrders(HttpSession session, ModelMap map);
+	String viewOrders(HttpSession session, ModelMap map,HttpServletResponse response)throws IOException;
 }

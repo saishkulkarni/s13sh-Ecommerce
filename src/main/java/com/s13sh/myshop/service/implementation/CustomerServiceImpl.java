@@ -1,5 +1,6 @@
 package com.s13sh.myshop.service.implementation;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
 	ShoppingOrderDao orderDao;
 
 	@Override
-	public String save(Customer customer, BindingResult result,HttpServletResponse response) {
+	public String save(Customer customer, BindingResult result, HttpServletResponse response) throws IOException {
 		if (customerDao.checkEmailDuplicate(customer.getEmail()))
 			result.rejectValue("email", "error.email", "* Account Already Exists with this Email");
 		if (customerDao.checkMobileDuplicate(customer.getMobile()))
@@ -67,7 +68,8 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String verifyOtp(int id, int otp, ModelMap map, HttpSession session,HttpServletResponse response) {
+	public String verifyOtp(int id, int otp, ModelMap map, HttpSession session, HttpServletResponse response)
+			throws IOException {
 		Customer customer = customerDao.findById(id);
 		System.out.println("*******2********");
 		if (customer.getOtp() == otp) {
@@ -106,7 +108,8 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String login(String email, String password, ModelMap map, HttpSession session,HttpServletResponse response) {
+	public String login(String email, String password, ModelMap map, HttpSession session, HttpServletResponse response)
+			throws IOException {
 		Customer customer = customerDao.findByEmail(email);
 		if (customer == null)
 			session.setAttribute("failMessage", "Invalid Email");
@@ -127,7 +130,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String viewProducts(HttpSession session, ModelMap map,HttpServletResponse response) {
+	public String viewProducts(HttpSession session, ModelMap map, HttpServletResponse response) throws IOException {
 		List<Product> products = productDao.fetchAll();
 		if (products.isEmpty()) {
 			session.setAttribute("failMessage", "No Products Present");
@@ -140,7 +143,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String addToCart(int id, HttpSession session,HttpServletResponse response) {
+	public String addToCart(int id, HttpSession session, HttpServletResponse response) throws IOException {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
@@ -201,7 +204,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String viewCart(ModelMap map, HttpSession session,HttpServletResponse response) {
+	public String viewCart(ModelMap map, HttpSession session, HttpServletResponse response) throws IOException {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
@@ -222,7 +225,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String removeFromCart(int id, HttpSession session,HttpServletResponse response) {
+	public String removeFromCart(int id, HttpSession session, HttpServletResponse response) throws IOException {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
@@ -250,7 +253,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String paymentPage(HttpSession session, ModelMap map,HttpServletResponse response) {
+	public String paymentPage(HttpSession session, ModelMap map, HttpServletResponse response) throws IOException {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
@@ -302,7 +305,8 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String confirmOrder(HttpSession session, int id, String razorpay_payment_id,HttpServletResponse response) {
+	public String confirmOrder(HttpSession session, int id, String razorpay_payment_id, HttpServletResponse response)
+			throws IOException {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
@@ -328,7 +332,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String viewOrders(HttpSession session, ModelMap map,HttpServletResponse response) {
+	public String viewOrders(HttpSession session, ModelMap map, HttpServletResponse response) throws IOException {
 		Customer customer = (Customer) session.getAttribute("customer");
 		if (customer == null) {
 			session.setAttribute("failMessage", "Invalid Session");
